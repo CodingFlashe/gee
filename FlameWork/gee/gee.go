@@ -24,7 +24,7 @@ func (engine *Engine) addRoute(method string, pattern string, handler HandlerFun
 }
 
 // Get 定义添加GET请求的方法
-func (engine *Engine) Get(pattern string, handler HandlerFunc) {
+func (engine *Engine) GET(pattern string, handler HandlerFunc) {
 	engine.addRoute("GET", pattern, handler)
 }
 
@@ -39,6 +39,6 @@ func (engine *Engine) Run(addr string) (err error) {
 }
 
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c := NewContext(w, r)
+	c := newContext(w, r)
 	engine.router.handle(c)
 }

@@ -15,12 +15,18 @@ type Context struct {
 	// 请求消息
 	Path   string
 	Method string
+	Params map[string]string
 	//相应消息
 	StatusCode int
 }
 
+func (c *Context) Param(key string) string {
+	value, _ := c.Params[key]
+	return value
+}
+
 // NewContext 上下文构造器
-func NewContext(w http.ResponseWriter, req *http.Request) *Context {
+func newContext(w http.ResponseWriter, req *http.Request) *Context {
 	return &Context{
 		Writer: w,
 		Req:    req,
@@ -51,13 +57,15 @@ func (c *Context) String(code int, format string, values ...interface{}) {
 	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
 }
 
-func (c *Context) JSON(code int, obj interface{}) {
+func (c *Context) JSON(code int, obj interface{}) error {
 	c.SetHeader("Content-Type", "application/json")
 	c.Status(code)
 	encoder := json.NewEncoder(c.Writer)
 	if err := encoder.Encode(obj); err != nil {
-		http.Error(c.Writer, err.Error(), 500)
+		// http.Error(c.Writer, err.Error(), 500)
+		return err
 	}
+	return nil
 }
 
 func (c *Context) Data(code int, data []byte) {
